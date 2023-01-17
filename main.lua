@@ -286,33 +286,65 @@ end
 ]]
 function love.keypressed(key)
     -- `key` will be whatever key this callback detected as pressed
-    if key == 'escape' then
-        -- the function LÖVE2D uses to quit the application
-        love.event.quit()
-    -- if we press enter during either the start or serve phase, it should
-    -- transition to the next appropriate state
-    elseif key == 'enter' or key == 'return' and gameState ~= 'menu' then
-        if gameState == 'start1' then
-            gameState = 'serve1'
-        elseif gameState == 'serve1' then
-            gameState = 'play1'
-        elseif gameState == 'done1' then
-            -- game is simply in a restart phase here, but will set the serving
-            -- player to the opponent of whomever won for fairness!
-            gameState = 'serve1'
 
-            ball:reset()
+    if gameState ~= 'menu' then
+        if key == 'escape' then
+            -- the function LÖVE2D uses to quit the application
+            love.event.quit()
 
-            -- reset scores to 0
-            player1Score = 0
-            player2Score = 0
+        -- if we press enter during either the start or serve phase, it should
+        -- transition to the next appropriate state
+        elseif key == 'enter' or key == 'return'  then
+            if gameState == 'start1' then
+                gameState = 'serve1'
+            elseif gameState == 'serve1' then
+                gameState = 'play1'
+            elseif gameState == 'done1' then
+                -- game is simply in a restart phase here, but will set the serving
+                -- player to the opponent of whomever won for fairness!
+                gameState = 'serve1'
 
-            -- decide serving player as the opposite of who won
-            if winningPlayer == 1 then
-                servingPlayer = 2
-            else
-                servingPlayer = 1
+                ball:reset()
+
+                -- reset scores to 0
+                player1Score = 0
+                player2Score = 0
+
+                -- decide serving player as the opposite of who won
+                if winningPlayer == 1 then
+                    servingPlayer = 2
+                else
+                    servingPlayer = 1
+                end
+
+            --added to manage the single player mode
+            elseif gameState == 'start2' then
+                gameState = 'serve2'
+            elseif gameState == 'serve2' then
+                gameState = 'play2'
+            elseif gameState == 'done2' then
+                gameState = 'serve2'
+
+                ball:reset()
+
+                -- reset scores to 0
+                player1Score = 0
+                player2Score = 0
+
+                -- decide serving player as the opposite of who won
+                if winningPlayer == 1 then
+                    servingPlayer = 2
+                else
+                    servingPlayer = 1
+                end
             end
+        end
+        
+    elseif gameState == 'menu' then
+        if key == '1' then
+            gameState = 'start1';
+        elseif key == '2' then
+            gameState = 'start2';
         end
     end
 end
