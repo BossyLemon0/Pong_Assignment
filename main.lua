@@ -360,6 +360,7 @@ if gameState ~= 'menu' then
 
     -- display FPS for debugging; simply comment out to remove
     displayFPS()
+    displayGameState()
 
 
 elseif gameState == 'menu' then
@@ -386,6 +387,13 @@ function displayScore()
         VIRTUAL_HEIGHT / 3)
     love.graphics.print(tostring(player2Score), VIRTUAL_WIDTH / 2 + 30,
         VIRTUAL_HEIGHT / 3)
+end
+
+function displayGameState()
+    -- score display
+    love.graphics.setFont(scoreFont)
+    love.graphics.print(tostring(gameState), VIRTUAL_WIDTH / 2 - 50,
+        VIRTUAL_HEIGHT / 4)
 end
 
 --[[
