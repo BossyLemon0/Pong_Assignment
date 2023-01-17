@@ -148,7 +148,7 @@ end
     across system hardware.
 ]]
 function love.update(dt)
-    if gameState == 'serve' then
+    if gameState == 'serve1' then
         -- before switching to play, initialize ball's velocity based
         -- on player who last scored
         ball.dy = math.random(-50, 50)
@@ -157,7 +157,7 @@ function love.update(dt)
         else
             ball.dx = -math.random(140, 200)
         end
-    elseif gameState == 'play' then
+    elseif gameState == 'play1' then
         -- detect ball collision with paddles, reversing dx if true and
         -- slightly increasing it, then altering the dy based on the position
         -- at which it collided, then playing a sound effect
@@ -214,9 +214,9 @@ function love.update(dt)
             -- state to done so we can show the victory message
             if player2Score == 10 then
                 winningPlayer = 2
-                gameState = 'done'
+                gameState = 'done1'
             else
-                gameState = 'serve'
+                gameState = 'serve1'
                 -- places the ball in the middle of the screen, no velocity
                 ball:reset()
                 player1:reset(10,30)
@@ -235,9 +235,9 @@ function love.update(dt)
             -- state to done so we can show the victory message
             if player1Score == 10 then
                 winningPlayer = 1
-                gameState = 'done'
+                gameState = 'done1'
             else
-                gameState = 'serve'
+                gameState = 'serve1'
                 -- places the ball in the middle of the screen, no velocity
                 ball:reset()
                 player1:reset(10,30)
@@ -253,7 +253,7 @@ function love.update(dt)
 
     -- update our ball based on its DX and DY only if we're in play state;
     -- scale the velocity by dt so movement is framerate-independent
-    if gameState == 'play' then
+    if gameState == 'play1' then
         ball:update(dt)
     -- player 1
         if love.keyboard.isDown('w') then
@@ -291,15 +291,15 @@ function love.keypressed(key)
         love.event.quit()
     -- if we press enter during either the start or serve phase, it should
     -- transition to the next appropriate state
-    elseif key == 'enter' or key == 'return' then
-        if gameState == 'start' then
-            gameState = 'serve'
-        elseif gameState == 'serve' then
-            gameState = 'play'
-        elseif gameState == 'done' then
+    elseif key == 'enter' or key == 'return' and gameState ~= 'menu' then
+        if gameState == 'start1' then
+            gameState = 'serve1'
+        elseif gameState == 'serve1' then
+            gameState = 'play1'
+        elseif gameState == 'done1' then
             -- game is simply in a restart phase here, but will set the serving
             -- player to the opponent of whomever won for fairness!
-            gameState = 'serve'
+            gameState = 'serve1'
 
             ball:reset()
 
@@ -329,20 +329,20 @@ function love.draw()
     
 if gameState ~= 'menu' then
     -- render different things depending on which part of the game we're in
-    if gameState == 'start' then
+    if gameState == 'start1' then
         -- UI messages
         love.graphics.setFont(smallFont)
         love.graphics.printf('Welcome to Pong!', 0, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.printf('Press Enter to begin!', 0, 20, VIRTUAL_WIDTH, 'center')
-    elseif gameState == 'serve' then
+    elseif gameState == 'serve1' then
         -- UI messages
         love.graphics.setFont(smallFont)
         love.graphics.printf('Player ' .. tostring(servingPlayer) .. "'s serve!", 
             0, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.printf('Press Enter to serve!', 0, 20, VIRTUAL_WIDTH, 'center')
-    elseif gameState == 'play' then
+    elseif gameState == 'play1' then
         -- no UI messages to display in play
-    elseif gameState == 'done' then
+    elseif gameState == 'done1' then
         -- UI messages
         love.graphics.setFont(largeFont)
         love.graphics.printf('Player ' .. tostring(winningPlayer) .. ' wins!',
@@ -366,6 +366,8 @@ elseif gameState == 'menu' then
     love.graphics.setFont(smallFont)
     buttons.single_player:render()
     buttons.multiplayer:render()
+    love.graphics.print(tostring(buttons), VIRTUAL_WIDTH / 2 + 30,
+    VIRTUAL_HEIGHT / 3)
 
     displayPos()
 
@@ -417,10 +419,13 @@ function displayPos()
         VIRTUAL_HEIGHT / 3)
 end
 
+-- testing this function, might just make the needed variables constants instead of getting the table then class then info
 function love.mousepressed(x, y, button, istouch)
-    if button == 1 then -- Versions prior to 0.10.0 use the MouseConstant 'l'
+    if button == 1 then
         currentX = x
         currentY = y
-        gameState = 'start'
+        if x <= VIRTUAL_WIDTH/2 then
+            gameState = 'start1'
+        end
     end
  end
