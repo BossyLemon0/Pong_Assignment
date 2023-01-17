@@ -127,6 +127,10 @@ function love.load()
     -- 3. 'play' (the ball is in play, bouncing between paddles)
     -- 4. 'done' (the game is over, with a victor, ready for restart)
     gameState = 'menu'
+    aiMode = 'easy'
+    collisions = 0
+    accuracy = 1
+    holdingNumber = 100
 end
 
 --[[
@@ -266,6 +270,7 @@ function love.update(dt)
         if ball:collides(player1) then
             ball.dx = -ball.dx * 1.03
             ball.x = player1.x + 5
+            collisions = collisions + 1
 
             -- keep velocity going in the same direction, but randomize it
             if ball.dy < 0 then
@@ -279,6 +284,7 @@ function love.update(dt)
         if ball:collides(player2) then
             ball.dx = -ball.dx * 1.03
             ball.x = player2.x - 4
+            collisions = collisions + 1
 
             -- keep velocity going in the same direction, but randomize it
             if ball.dy < 0 then
@@ -288,6 +294,19 @@ function love.update(dt)
             end
 
             sounds['paddle_hit']:play()
+        end
+
+        --sets up the difficulty of the ai
+
+        if collisions < 7 then
+            holdingNumber = math.random(80,100)
+            accuracy = holdingNumber * .01
+        elseif collisions >=7 and collisions < 13 then 
+            holdingNumber = math.random(60,90)
+            accuracy = holdingNumber * .01
+        elseif collisions >=13 then 
+            holdingNumber = math.random(49,85)
+            accuracy = holdingNumber * .01
         end
 
         -- detect upper and lower screen boundary collision, playing a sound
@@ -311,6 +330,7 @@ function love.update(dt)
             servingPlayer = 1
             player2Score = player2Score + 1
             sounds['score']:play()
+            collisions = 0
 
             -- if we've reached a score of 10, the game is over; set the
             -- state to done so we can show the victory message
@@ -332,6 +352,7 @@ function love.update(dt)
             servingPlayer = 2
             player1Score = player1Score + 1
             sounds['score']:play()
+            collisions = 0
 
             -- if we've reached a score of 10, the game is over; set the
             -- state to done so we can show the victory message
@@ -382,10 +403,10 @@ function love.update(dt)
                 player1.dy = 0
             end
         --player 2 ai
-        if player2.y < ball.y  then
-            player2.dy = PADDLE_SPEED
-        elseif  player2.y > ball.y then
-            player2.dy = -PADDLE_SPEED
+        if player2.y + 15 < ball.y  then
+            player2.dy = PADDLE_SPEED * accuracy
+        elseif  player2.y + 15 > ball.y then
+            player2.dy = -PADDLE_SPEED * accuracy
         else
             player2.dy = 0  
         end
@@ -563,8 +584,13 @@ end
 function displayGameState()
     -- score display
     love.graphics.setFont(scoreFont)
-    love.graphics.print(tostring(gameState), VIRTUAL_WIDTH / 2 - 50,
-        VIRTUAL_HEIGHT / 4)
+    -- love.graphics.print(tostring(gameState), VIRTUAL_WIDTH / 2 - 50,
+    --     VIRTUAL_HEIGHT / 4)
+    love.graphics.print(tostring(collisions), VIRTUAL_WIDTH / 2 - 50,
+    VIRTUAL_HEIGHT / 4)
+
+    love.graphics.print(tostring(accuracy), VIRTUAL_WIDTH / 2 - 20,
+    VIRTUAL_HEIGHT / 4)
 end
 
 --[[
