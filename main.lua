@@ -86,8 +86,8 @@ function love.load()
 
 
     buttons = {
-        ['single_player'] = UI(VIRTUAL_WIDTH/2 - 22,VIRTUAL_HEIGHT/2 + 40, 56, 29, "single Player" ),
-        ['multiplayer'] = UI(VIRTUAL_WIDTH/2 - 22, VIRTUAL_HEIGHT/2 - 40,56, 29, "multiplayer")
+        ['single_player'] = UI(VIRTUAL_WIDTH/2 - 22,VIRTUAL_HEIGHT/2 + 30, 56, 39, "Single Player", "(press 2)"),
+        ['multiplayer'] = UI(VIRTUAL_WIDTH/2 - 22, VIRTUAL_HEIGHT/2 - 30,56, 39, "Multiplayer", "(press 1)")
     }
     
     -- initialize our virtual resolution, which will be rendered within our
@@ -305,7 +305,7 @@ function love.update(dt)
             holdingNumber = math.random(60,90)
             accuracy = holdingNumber * .01
         elseif collisions >=13 then 
-            holdingNumber = math.random(49,85)
+            holdingNumber = math.random(49,75)
             accuracy = holdingNumber * .01
         end
 
@@ -428,7 +428,7 @@ function love.keypressed(key)
     if gameState ~= 'menu' then
         if key == 'escape' then
             -- the function LÖVE2D uses to quit the application
-            love.event.quit()
+            gameState = 'menu'
 
         -- if we press enter during either the start or serve phase, it should
         -- transition to the next appropriate state
@@ -483,6 +483,8 @@ function love.keypressed(key)
             gameState = 'start1';
         elseif key == '2' then
             gameState = 'start2';
+        elseif key == 'escape' then
+            love.event.quit()
         end
     end
 end
@@ -502,7 +504,7 @@ if gameState ~= 'menu' then
     if gameState == 'start1' then
         -- UI messages
         love.graphics.setFont(smallFont)
-        love.graphics.printf('Welcome to Pong!', 0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Welcome to Pong Multiplayer Player!', 0, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.printf('Press Enter to begin!', 0, 20, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'serve1' then
         -- UI messages
@@ -524,7 +526,7 @@ if gameState ~= 'menu' then
     if gameState == 'start2' then
         -- UI messages
         love.graphics.setFont(smallFont)
-        love.graphics.printf('Welcome to Pong!', 0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Welcome to Pong Single Player!', 0, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.printf('Press Enter to begin!', 0, 20, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'serve2' then
         -- UI messages
@@ -552,17 +554,20 @@ if gameState ~= 'menu' then
 
     -- display FPS for debugging; simply comment out to remove
     displayFPS()
-    displayGameState()
+    -- displayGameState()
 
 
 elseif gameState == 'menu' then
+    love.graphics.setFont(scoreFont)
+    love.graphics.printf('Pong!', 12, 30, VIRTUAL_WIDTH, 'center')
     love.graphics.setFont(smallFont)
     buttons.single_player:render()
     buttons.multiplayer:render()
-    love.graphics.print(tostring(buttons), VIRTUAL_WIDTH / 2 + 30,
-    VIRTUAL_HEIGHT / 3)
 
-    displayPos()
+    -- love.graphics.print(tostring(buttons), VIRTUAL_WIDTH / 2 + 30,
+    -- VIRTUAL_HEIGHT / 3)
+
+    -- displayPos()
 
 end
     -- end our drawing to push
